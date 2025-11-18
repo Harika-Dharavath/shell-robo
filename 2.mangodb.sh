@@ -21,13 +21,13 @@ fi
 
 VALIDATECOMMAND(){ #no space should be between validate command and ()
     if [ $1 -ne 0 ]; then
-        echo -e "$B Error: $2 installation failed."
+        echo -e "$B Error: $2 failed."
         #ACCORDING to our present code $2 is mysql ,mgodb,ngnix
         exit 1
         
 
     else 
-        echo -e "$O $2 installed successfully."
+        echo -e "$O $2 success ."
     fi
 }      
 
