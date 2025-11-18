@@ -33,7 +33,7 @@ VALIDATECOMMAND(){ #no space should be between validate command and ()
 
 #earlier mangodb manual ga install chesamu kani ipudu script dwara cheddam
 # so automation kosam code rasthey mobexterm dwara direct ga install cheyochu 
-cp mongo.repo /etc/yum.repos.d/mongo.repo  #Copying the mongodb reop file to yum.repos.d
+cp /home/ec2-user/shell-robo/mongo.repo /etc/yum.repos.d/mongo.repo  #Copying the mongodb reop file to yum.repos.d
 VALIDATECOMMAND $? "Mongodb repo file copy"
 
 dnf install mongodb-org -y &>>$LOG_FILE #append cheyadaniki >>
