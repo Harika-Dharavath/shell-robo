@@ -55,8 +55,6 @@ VALIDATECOMMAND $? "Downloading catalogue component"
 cd /app
 VALIDATECOMMAND $? "Changing directory to /app"
 
-rm -rf /app/*  #removing all the existing content in /app
-VALIDATECOMMAND $? "Removing old content from /app directory"
 
 unzip /tmp/catalogue.zip
 VALIDATECOMMAND $? "Extracting catalogue component"
