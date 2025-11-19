@@ -8,6 +8,7 @@ N="\e[0m"  # No Color
 
 LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1) #. tarvatha vache daani print cheyadu 
+SCRIPT_DIR=$(pwd)/$0
 MONGODB_HOST=mongodb.daw86s.space
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
 
@@ -54,12 +55,16 @@ VALIDATECOMMAND $? "Downloading catalogue component"
 cd /app
 VALIDATECOMMAND $? "Changing directory to /app"
 
+rm -rf /app/*  #removing all the existing content in /app
+VALIDATECOMMAND $? "Removing old content from /app directory"
+
 unzip /tmp/catalogue.zip
 VALIDATECOMMAND $? "Extracting catalogue component"
+
 npm install
 VALIDATECOMMAND $? "Installing nodejs dependencies for catalogue"
 
-cp catalogue.service /etc/systemd/system/catalogue.service 
+cp $SCRIPT_DIR /catalogue.service /etc/systemd/system/catalogue.service 
 VALIDATECOMMAND $? "Copying catalogue service file"
 
 systemctl daemon-reload
@@ -67,7 +72,7 @@ systemctl enable catalogue
 systemctl start catalogue
 VALIDATECOMMAND $? "Starting catalogue service"
  
-cp mongo.repo /etc/yum.repos.d/mongo.repo  #Copying the mongodb repo file to yum.
+cp mango.repo /etc/yum.repos.d/mongo.repo  #Copying the mongodb repo file to yum.
 
 dnf install mongodb-mongosh -y &>>$LOG_FILE
 VALIDATECOMMAND $? "Installing Mongodb client"
