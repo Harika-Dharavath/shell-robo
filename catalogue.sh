@@ -70,7 +70,7 @@ systemctl enable catalogue
 systemctl start catalogue
 VALIDATECOMMAND $? "Starting catalogue service"
  
-cp mango.repo /etc/yum.repos.d/mongo.repo  #Copying the mongodb repo file to yum.
+cp mongo.repo /etc/yum.repos.d/mongo.repo  #Copying the mongodb repo file to yum.
 
 dnf install mongodb-mongosh -y &>>$LOG_FILE
 VALIDATECOMMAND $? "Installing Mongodb client"
