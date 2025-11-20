@@ -81,12 +81,14 @@ cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo  #Copying the mongodb repo
 dnf install mongodb-mongosh -y &>>$LOG_FILE
 VALIDATECOMMAND $? "Installing Mongodb client"
 
-INDEX=$(mongosh mongodb.daw86s.space --quiet --eval "db.getMongo().getDBNames().inexOf('catalogue')" )
-if [$INDEX -le 0 ]; then
-  mongosh --host $MONGODB_HOST </app/db/master-data.js
+
+INDEX=$(mongosh --quiet --host "$MONGODB_HOST" --eval 'db.getMongo().getDBNames().indexOf("catalogue")' 2>/dev/null || echo -1)
+if [ "$INDEX" -eq -1 ]; then
+  mongosh --host "$MONGODB_HOST" </app/db/master-data.js &>>"$LOG_FILE"
   VALIDATECOMMAND $? "Loading catalogue schema to Mongodb"
 else
-    echo -e "$O catalogue database already exists. Skipping catalogue schema load. $N" &>>$LOG_FILE
+    echo -e "${O}catalogue database already exists. Skipping catalogue schema load.${N}" | tee -a "$LOG_FILE"
 fi
+
 systemctl restart catalogue
 VALIDATECOMMAND $? "Restarting catalogue service"
