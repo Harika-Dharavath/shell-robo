@@ -81,8 +81,8 @@ cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo  #Copying the mongodb repo
 dnf install mongodb-mongosh -y &>>$LOG_FILE
 VALIDATECOMMAND $? "Installing Mongodb client"
 
-INDEX=$(mongosh mongodb.daw86s.space --quiet --eval 'db.getMongo().getDBNames().inexOf('catalogue')' )
-if [ $INDEX -ne -1 ]; then
+INDEX=$(mongosh mongodb.daw86s.space --quiet --eval "db.getMongo().getDBNames().inexOf('catalogue')" )
+if [$INDEX -le 0 ]; then
   mongosh --host $MONGODB_HOST </app/db/master-data.js
   VALIDATECOMMAND $? "Loading catalogue schema to Mongodb"
 else
