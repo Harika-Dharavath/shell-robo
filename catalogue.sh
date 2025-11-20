@@ -80,7 +80,9 @@ cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo  #Copying the mongodb repo
 
 dnf install mongodb-mongosh -y &>>$LOG_FILE
 VALIDATECOMMAND $? "Installing Mongodb client"
-mongosh --host $MONGODB_HOST </app/db/master-data.js &>>$LOG_FILE
+
+mongosh --host $MONGODB_HOST </app/db/master-data.js
 VALIDATECOMMAND $? "Loading catalogue schema to Mongodb"
+
 systemctl restart catalogue
 VALIDATECOMMAND $? "Restarting catalogue service"
