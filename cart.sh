@@ -60,10 +60,9 @@ cd /app
 VALIDATECOMMAND $? "Changing directory to /app"
 
 rm -rf /app/*
-VALIDATECOMMAND $? "Cleaning up old catalogue content" 
-
-unzip /tmp/user.zip &>>$LOG_FILE
-VALIDATECOMMAND $? "Extracting catalogue component"
+VALIDATECOMMAND $? "Cleaning up cart content" 
+unzip /tmp/cart.zip &>>$LOG_FILE
+VALIDATECOMMAND $? "Extracting cart component"
 
 npm install &>>$LOG_FILE
 VALIDATECOMMAND $? "Installing nodejs dependencies for catalogue"
