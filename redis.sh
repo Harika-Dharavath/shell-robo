@@ -8,8 +8,6 @@ N="\e[0m"  # No Color
 
 LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1) #. tarvatha vache daani print cheyadu 
-SCRIPT_DIR=$PWD
-MONGODB_HOST=mongodb.daw86s.space
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
 START_TIME=$(date +%s)
 
