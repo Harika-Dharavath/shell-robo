@@ -36,8 +36,13 @@ VALIDATECOMMAND(){ #no space should be between validate command and ()
 dnf install maven -y &>>$LOG_FILE
 VALIDATECOMMAND $? "Maven"
 
-useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
-VALIDATECOMMAND $? "Creating roboshop user"
+id roboshop &>>$LOG_FILE
+if [ $? -ne 0 ]; then
+     useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
+     VALIDATECOMMAND $? "Creating roboshop user"
+else
+        echo -e "$O roboshop user already exists. Skipping user creation. $N" &>>$LOG_FILE
+ fi
 
 mkdir -p /app
 VALIDATECOMMAND $? "Creating /app directory"
