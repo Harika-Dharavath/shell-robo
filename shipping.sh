@@ -80,10 +80,10 @@ VALIDATECOMMAND $? "Installing mysql client"
 mysql -h mysql.daw86s.space -uroot -pRoboShop@1 < /app/db/schema.sql &>>$LOG_FILE
 VALIDATECOMMAND $? "Loading shipping schema to mysql"
 
-mysql -h mysql.daws86s.space -uroot -pRoboShop@1 < /app/db/app-user.sql &>>$LOG_FILE
+mysql -h mysql.daw86s.space -uroot -pRoboShop@1 < /app/db/app-user.sql &>>$LOG_FILE
 VALIDATECOMMAND $? "Loading shipping app-user to mysql"
 
-mysql -h mysql.daws86s.space -uroot -pRoboShop@1 < /app/db/master-data.sql &>>$LOG_FILE
+mysql -h mysql.daw86s.space -uroot -pRoboShop@1 < /app/db/master-data.sql &>>$LOG_FILE
 VALIDATECOMMAND $? "Loading shipping master data to mysql"
 
 systemctl restart shipping &>>$LOG_FILE
