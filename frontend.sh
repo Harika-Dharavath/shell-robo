@@ -1,5 +1,4 @@
-# !/bin/bash
-R="\e[31m"     # Red color
+R="\e[31m" # Red color
 G="\e[32m" # Green color
 Y="\e[0;33m" # Yellow color]
 B="\e[1;33M" # Bold Yellow color
@@ -8,8 +7,8 @@ N="\e[0m"  # No Color
 
 LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1) #. tarvatha vache daani print cheyadu 
+SCRIPT_DIR=$PWD
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
-START_TIME=$(date +%s)
 
 mkdir -p $LOGS_FOLDER
 echo -e "$G script started executed at : $(date) $N" | tee -a $LOG_FILE #tee lets you see the output on the screen while also saving it to a file.
@@ -31,17 +30,26 @@ VALIDATECOMMAND(){ #no space should be between validate command and ()
         echo -e "$O $2.....$G sucessfully. $N"| tee -a $LOG_FILE
 
     fi
-}   
+}
 
-dnf install mysql-server -y &>>$LOG_FILE
-VALIDATECOMMAND $? "MySQL Server"
-systemctl enable mysqld &>>$LOG_FILE
-VALIDATECOMMAND $? "Enabling MySQL service"
-systemctl start mysqld &>>$LOG_FILE
-VALIDATECOMMAND $? "Starting MySQL service"
-mysql_secure_installation --set-root-pass RoboShop@1
-VALIDATECOMMAND $? "Securing MySQL installation"
 
-END_TIME=$(date +%s)
-TOTAL_TIME=$(($END_TIME-$START_TIME))
-echo -e "$G Script executed successfully in $TOTAL_TIME seconds. $N" | tee -a $LOG_FILE
+dnf module disable nginx -y
+dnf module enable nginx:1.24 -y
+dnf install nginx -y
+
+systemctl enable nginx 
+systemctl start nginx 
+
+rm -rf /usr/share/nginx/html/* 
+
+curl -o /tmp/frontend.zip https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip
+VALIDATECOMMAND $? "Downloading frontend component"
+
+cd /usr/share/nginx/html 
+unzip /tmp/frontend.zip
+VALIDATECOMMAND $? "Extracting frontend component"
+
+cp $SCRIPT_DIR/frontend.conf /etc/nginx/default.d/roboshop.conf
+
+systemctl restart nginx 
+VALIDATECOMMAND $? "Restarting Nginx service"

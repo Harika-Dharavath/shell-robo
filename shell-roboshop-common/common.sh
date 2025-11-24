@@ -1,4 +1,9 @@
-# Red color
+#!/bin/bash
+
+# as i have learnt calling the script into another script 
+#now iam going to source  this common.sh into the roboshop all sctipts
+
+R="\e[31m" # Red color
 G="\e[32m" # Green color
 Y="\e[0;33m" # Yellow color]
 B="\e[1;33M" # Bold Yellow color
@@ -7,9 +12,11 @@ N="\e[0m"  # No Color
 
 LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1) #. tarvatha vache daani print cheyadu 
+SCRIPT_DIR=$PWD
+MONGODB_HOST=mongodb.daw86s.space
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
 START_TIME=$(date +%s)
-
+ 
 mkdir -p $LOGS_FOLDER
 echo -e "$G script started executed at : $(date) $N" | tee -a $LOG_FILE #tee lets you see the output on the screen while also saving it to a file.
 
@@ -30,25 +37,10 @@ VALIDATECOMMAND(){ #no space should be between validate command and ()
         echo -e "$O $2.....$G sucessfully. $N"| tee -a $LOG_FILE
 
     fi
-}    
+} 
 
-#installing redis  
-
-dnf module disable redis -y &>>$LOG_FILE
-VALIDATECOMMAND $? "Disabling Redis module"
-dnf module enable redis:7 -y &>>$LOG_FILE
-VALIDATECOMMAND $? "Enabling Redis 7 module"
-dnf install redis -y &>>$LOG_FILE
-VALIDATECOMMAND $? "Redis"
-
-sed -i -e 's/127.0.0.1/0.0.0.0/g' -e '/protected-mode/ c protected-mode no ' /etc/redis/redis.conf &>>$LOG_FILE
-VALIDATECOMMAND $? "allowing remote connections in redis.conf"
-
-systemctl enable redis &>>$LOG_FILE
-VALIDATECOMMAND $? "Enabling Redis service"
-systemctl start redis &>>$LOG_FILE
-VALIDATECOMMAND $? "Starting Redis service"
-
+print_total_time(){
 END_TIME=$(date +%s)
 TOTAL_TIME=$(($END_TIME-$START_TIME))
 echo -e "$G Script executed successfully in $TOTAL_TIME seconds. $N" | tee -a $LOG_FILE
+}

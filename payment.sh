@@ -31,10 +31,10 @@ VALIDATECOMMAND(){ #no space should be between validate command and ()
         echo -e "$O $2.....$G sucessfully. $N"| tee -a $LOG_FILE
 
     fi
-} 
+}  
 
-dnf install maven -y &>>$LOG_FILE
-VALIDATECOMMAND $? "Maven"
+dnf install python3 gcc python3-devel -y &>>$LOG_FILE
+VALIDATECOMMAND $? "Installing Python3"
 
 id roboshop &>>$LOG_FILE
 if [ $? -ne 0 ]; then
@@ -47,22 +47,22 @@ else
 mkdir -p /app
 VALIDATECOMMAND $? "Creating /app directory"
 
-curl -L -o /tmp/shipping.zip https://roboshop-artifacts.s3.amazonaws.com/shipping-v3.zip &>>$LOG_FILE
-VALIDATECOMMAND $? "Downloading shipping component"
+curl -L -o /tmp payment.zip https://roboshop-artifacts.s3.amazonaws.com payment-v3.zip &>>$LOG_FILE
+VALIDATECOMMAND $? "Downloading payment component"
  
 cd /app
 VALIDATECOMMAND $? "Changing directory to /app"
 
-unzip -o /tmp/shipping.zip &>>$LOG_FILE
-VALIDATECOMMAND $? "Extracting shipping component"
+rm -rf /app/* &>>$LOG_FILE
+VALIDATECOMMAND $? "Cleaning /app directory"
 
-mvn clean package &>>$LOG_FILE
-VALIDATECOMMAND $? "Building shipping component"
+unzip -o /tmp payment.zip &>>$LOG_FILE
+VALIDATECOMMAND $? "Extracting payment component"
 
-mv target/shipping-1.0.jar shipping.jar &>>$LOG_FILE
-VALIDATECOMMAND $? "Renaming shipping jar file"
+pip3 install -r requirements.txt &>>$LOG_FILE
+VALIDATECOMMAND $? "Installing payment dependencies"
 
-cp $SCRIPT_DIR/shippingserver /etc/systemd/system/user.service &>>$LOG_FILE
+cp $SCRIPT_DIR payment.server /etc/systemd/system/user.service &>>$LOG_FILE
 VALIDATECOMMAND $? "Copying user service file"
 
 systemctl daemon-reload &>>$LOG_FILE
@@ -80,15 +80,15 @@ VALIDATECOMMAND $? "Installing mysql client"
 mysql -h mysql.daw86s.space -uroot -pRoboShop@1 -e 'use mysql' &>>$LOG_FILE
 if [ $? -ne 0 ]; then
      mysql -h mysql.daw86s.space -uroot -pRoboShop@1 < /app/db/schema.sql &>>$LOG_FILE
-     VALIDATECOMMAND $? "Loading shipping schema to mysql"
+     VALIDATECOMMAND $? "Loading payment schema to mysql"
 
      mysql -h mysql.daw86s.space -uroot -pRoboShop@1 < /app/db/app-user.sql &>>$LOG_FILE
-     VALIDATECOMMAND $? "Loading shipping app-user to mysql"
+     VALIDATECOMMAND $? "Loading payment app-user to mysql"
 
      mysql -h mysql.daw86s.space -uroot -pRoboShop@1 < /app/db/master-data.sql &>>$LOG_FILE
-     VALIDATECOMMAND $? "Loading shipping master data to mysql"
+     VALIDATECOMMAND $? "Loading payment master data to mysql"
 else
-        echo -e "$O shipping schema is already present. Skipping schema load. $N" &>>$LOG_FILE
+        echo -e "$O payment schema is already present. Skipping schema load. $N" &>>$LOG_FILE
     fi
-systemctl restart shipping &>>$LOG_FILE
-VALIDATECOMMAND $? "Restarting shipping service"
+systemctl restart payment &>>$LOG_FILE
+VALIDATECOMMAND $? "Restarting payment service"
