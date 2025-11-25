@@ -44,3 +44,58 @@ END_TIME=$(date +%s)
 TOTAL_TIME=$(($END_TIME-$START_TIME))
 echo -e "$G Script executed successfully in $TOTAL_TIME seconds. $N" | tee -a $LOG_FILE
 }
+
+
+ cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo  #Copying the mongodb repo file to yum.
+
+dnf install mongodb-mongosh -y &>>$LOG_FILE
+VALIDATECOMMAND $? "Installing Mongodb client"
+
+
+
+
+nodejs_setup(){
+   dnf module disable nodejs -y &>>$LOG_FILE
+   VALIDATECOMMAND $? "Disabling Nodejs module"
+   dnf module enable nodejs:20 -y &>>$LOG_FILE
+   VALIDATECOMMAND $? "Enabling Nodejs 20 module"
+   dnf install nodejs -y &>>$LOG_FILE
+   VALIDATECOMMAND $? "Nodejs"
+   npm install &>>$LOG_FILE
+   VALIDATECOMMAND $? "Installing nodejs dependencies for catalogue"
+
+}
+
+roboshop_user_setup(){
+     id roboshop &>>$LOG_FILE
+     if [ $? -ne 0 ]; then
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
+        VALIDATECOMMAND $? "Creating roboshop user"
+     else
+        echo -e "$O roboshop user already exists. Skipping user creation. $N" &>>$LOG_FILE
+     fi
+}
+
+app_setup(){
+    mkdir -p /app 
+    VALIDATECOMMAND $? "Creating /app directory"
+    curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/app-v3.zip &>>$LOG_FILE
+    VALIDATECOMMAND $? "Downloading $app_name component"
+    cd /app
+    VALIDATECOMMAND $? "Changing directory to $app_name"
+    rm -rf /app/*
+    VALIDATECOMMAND $? "Cleaning up old $app_name content" 
+    unzip /tmp/$app_name.zip
+    VALIDATECOMMAND $? "Extracting/app component"
+}
+
+systemd_setup(){
+         cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service 
+         VALIDATECOMMAND $? "Copying catalogue service file"
+
+         systemctl daemon-reload
+         systemctl enable catalogue
+         systemctl start catalogue
+        VALIDATECOMMAND $? "Starting catalogue service"
+
+    }
