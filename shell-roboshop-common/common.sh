@@ -62,7 +62,7 @@ nodejs_setup(){
    dnf install nodejs -y &>>$LOG_FILE
    VALIDATECOMMAND $? "Nodejs"
    npm install &>>$LOG_FILE
-   VALIDATECOMMAND $? "Installing nodejs dependencies for catalogue"
+   VALIDATECOMMAND $? "Installing nodejs dependencies for $app_name"
 
 }
 
@@ -78,24 +78,29 @@ roboshop_user_setup(){
 
 app_setup(){
     mkdir -p /app 
-    VALIDATECOMMAND $? "Creating /app directory"
-    curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/app-v3.zip &>>$LOG_FILE
-    VALIDATECOMMAND $? "Downloading $app_name component"
-    cd /app
-    VALIDATECOMMAND $? "Changing directory to $app_name"
-    rm -rf /app/*
-    VALIDATECOMMAND $? "Cleaning up old $app_name content" 
-    unzip /tmp/$app_name.zip
-    VALIDATECOMMAND $? "Extracting/app component"
+VALIDATECOMMAND $? "Creating /app directory"
+
+curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip &>>$LOG_FILE
+VALIDATECOMMAND $? "Downloading $app_name component"
+
+cd /app
+VALIDATECOMMAND $? "Changing directory to /app"
+
+rm -rf /app/*
+VALIDATECOMMAND $? "Cleaning up old $app_name content" 
+
+unzip /tmp/$app_name.zip
+VALIDATECOMMAND $? "Extracting $app_name component"
+
 }
 
 systemd_setup(){
-         cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service 
-         VALIDATECOMMAND $? "Copying catalogue service file"
+         cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service 
+         VALIDATECOMMAND $? "Copying $app_name service file"
 
          systemctl daemon-reload
-         systemctl enable catalogue
-         systemctl start catalogue
-        VALIDATECOMMAND $? "Starting catalogue service"
+         systemctl enable $app_name
+         systemctl start $app_name
+        VALIDATECOMMAND $? "Starting $app_name service"
 
     }
